@@ -1,0 +1,82 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Greeting App</title>
+  <style>
+    body {
+      margin: 0;
+      height: 100vh;
+      display: flex;
+      flex-direction: column;
+      justify-content: center;
+      align-items: center;
+      font-family: Arial, sans-serif;
+      background: #e3f2fd;
+    }
+
+    input, button {
+      padding: 10px;
+      margin: 10px;
+      font-size: 1rem;
+    }
+
+    #message {
+      margin-top: 40px;
+      font-size: 3rem;
+      font-weight: bold;
+      color: #0d47a1;
+      text-align: center;
+    }
+
+    #error {
+      color: red;
+      margin-top: 10px;
+      font-size: 1rem;
+    }
+  </style>
+</head>
+<body>
+
+  <div>
+    <input type="text" id="nameInput" placeholder="Ingresa tu nombre"/>
+    <button onclick="getGreeting()">Saludar</button>
+  </div>
+
+  <div id="message"></div>
+  <div id="error"></div>
+
+  <script>
+    async function getGreeting() {
+      const name = document.getElementById("nameInput").value.trim();
+      const messageDiv = document.getElementById("message");
+      const errorDiv = document.getElementById("error");
+
+      messageDiv.textContent = "";
+      errorDiv.textContent = "";
+
+      if (name === "") {
+        errorDiv.textContent = "Por favor, ingresa un nombre.";
+        return;
+      }
+
+      const url = `http://localhost:8080/greeting?name=${encodeURIComponent(name)}`;
+
+      try {
+        const response = await fetch(url);
+        if (!response.ok) {
+          throw new Error("Respuesta no válida del servidor");
+        }
+
+        const data = await response.json();
+        messageDiv.textContent = data.content;
+      } catch (error) {
+        errorDiv.textContent = "Error al conectar con el servidor.";
+        console.error(error);
+      }
+    }
+  </script>
+
+</body>
+</html>
